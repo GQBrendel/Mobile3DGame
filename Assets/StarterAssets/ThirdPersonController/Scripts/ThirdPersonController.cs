@@ -86,10 +86,12 @@ namespace StarterAssets
 		private CharacterController _controller;
 		private StarterAssetsInputs _input;
 		private GameObject _mainCamera;
+		private PlayerInteraction _playerInteraction;
 
 		private const float _threshold = 0.01f;
 
 		private bool _hasAnimator;
+		private bool _hasPlayerInteraction;
 
 		private void Awake()
 		{
@@ -103,6 +105,7 @@ namespace StarterAssets
 		private void Start()
 		{
 			_hasAnimator = TryGetComponent(out _animator);
+			_hasPlayerInteraction = TryGetComponent(out _playerInteraction);
 			_controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
 
@@ -224,6 +227,11 @@ namespace StarterAssets
 			{
 				_animator.SetFloat(_animIDSpeed, _animationBlend);
 				_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+			}
+
+			if (_hasPlayerInteraction)
+			{
+				_playerInteraction.SetSpeed(targetSpeed);
 			}
 		}
 

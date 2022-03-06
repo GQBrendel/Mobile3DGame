@@ -8,9 +8,9 @@ public class EndGameTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<PlayerTag>())
+        if (other.GetComponent<Player>())
         {
-            EndLevel();
+            EndLevel(); 
         }
     }
 
