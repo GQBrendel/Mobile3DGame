@@ -4,17 +4,19 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(Animator))]
 public class SlimeController : Enemy
 {
     [SerializeField] private float _lookRadius;
     [SerializeField] private float _rotationSlerp = 5f;
+    [SerializeField] private float _attackInitialDelay = 2f;
+    [SerializeField] private float _betweenAttacksDelay = 1f;
 
     [SerializeField] private EnemyAIState _state;
 
     private Transform _target;
     private NavMeshAgent _agent;
-    private Animator _animator;
+
+    private bool _attacking = false;
 
     private float _distance;
 
@@ -22,7 +24,7 @@ public class SlimeController : Enemy
     private void Start()
     {
         TryGetComponent(out _agent);
-        TryGetComponent(out _animator);
+        TryGetComponent(out Animator);
         _target = PlayerManager.Instance.GetPlayerTransform();
     }
 
@@ -44,19 +46,51 @@ public class SlimeController : Enemy
                 Move();
                 if (_distance <= _agent.stoppingDistance)
                 {
-                    FaceTarget();
+                    StartCoroutine(ChangeToAttackStateRoutine());
                 }
                 break;
 
             case EnemyAIState.AttackingState:
+
+                if (!_attacking)
+                {
+                    StartCoroutine(AttackRoutine());
+                }
+                FaceTarget();
+
+                if (_distance > _agent.stoppingDistance)
+                {
+                    StopAttack();
+                    _state = EnemyAIState.ChasingState;
+                }
                 break;
         }     
+    }
+
+    private IEnumerator ChangeToAttackStateRoutine()
+    {
+        yield return new WaitForSeconds(_attackInitialDelay);
+        _state = EnemyAIState.AttackingState;
     }
 
     private void Move()
     {
         _agent.SetDestination(_target.position);
-        _animator.SetFloat("Speed", _agent.velocity.magnitude);
+        Animator.SetFloat("Speed", _agent.velocity.magnitude);
+    }
+
+    private IEnumerator AttackRoutine()
+    {
+        _attacking = true;
+        Animator.SetTrigger("Attack");
+        yield return new WaitForSeconds(_betweenAttacksDelay);
+
+        _attacking = false;
+    }
+
+    private void StopAttack()
+    {
+        Animator.SetBool("Attack", false);
     }
 
 
@@ -72,5 +106,11 @@ public class SlimeController : Enemy
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _lookRadius);
         
+    }
+
+    //Animation Event
+    private void AttackHit()
+    {
+        PlayerManager.Instance.ApplyPlayerHit(EnemyStats.Damage);
     }
 }

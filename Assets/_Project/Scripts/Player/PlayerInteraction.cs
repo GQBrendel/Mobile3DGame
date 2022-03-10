@@ -17,12 +17,18 @@ public class PlayerInteraction : MonoBehaviour
     private Animator _animator;
 
     private bool _inRange;
+
     private float _speed;
 
     private ResourceProvider _currentResourceProvider;
     private Enemy _currentEnemy;
 
     private PlayerHeldItemController _heldController;
+
+    internal void ApplyHit(float damage)
+    {
+        _animator.SetTrigger("Hit");
+    }
 
     private void Awake()
     {
@@ -76,8 +82,13 @@ public class PlayerInteraction : MonoBehaviour
             if (_speed < 0.01f)
             {
                 transform.LookAt(_currentEnemy.transform);
-                _animator.SetBool("Attack", true);
                 _heldController.EquipSword();
+
+                _animator.SetBool("Attack", true);
+            }
+            else// if (_speed > 0.2f)
+            {
+                HandleInteractionStop(_currentEnemy);
             }
             yield return null;
         }
@@ -142,8 +153,14 @@ public class PlayerInteraction : MonoBehaviour
     }
 
     //Called by AnimationEvent
-    public void HitTree()
+    public void HitWithAxe()
     {
         _currentResourceProvider.Hit(_playerDamage);
+    }
+
+    //Called by AnimationEvent
+    public void HitWithSword()
+    {
+        _currentEnemy.Hit(_playerDamage);
     }
 }

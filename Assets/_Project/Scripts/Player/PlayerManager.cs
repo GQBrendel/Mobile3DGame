@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
-    [SerializeField] private Player _player;
+    [SerializeField] private PlayerInteraction _player;
 
     private void Awake()
     {
@@ -22,5 +22,10 @@ public class PlayerManager : MonoBehaviour
     public Transform GetPlayerTransform()
     {
         return _player.transform;
+    }
+
+    public void ApplyPlayerHit(float damage)
+    {
+        _player.ApplyHit(damage);
     }
 }

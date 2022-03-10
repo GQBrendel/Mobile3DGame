@@ -61,7 +61,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.6039266
-        functionName: HitTree
+        functionName: HitWithAxe
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

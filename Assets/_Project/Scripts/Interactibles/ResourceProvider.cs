@@ -17,7 +17,6 @@ public class ResourceProvider : Interactible
 
     private void Start()
     {
-        base.Awake();
         _currentHp = _maxHp;
     }
 

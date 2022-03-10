@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 111b982bea4fe1041b7543e464385239
+guid: b1f548da6835dd34da3718a38682a86e
 ModelImporter:
   serializedVersion: 22102
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Stable Sword Outward Slash
+    second: TakeDamage
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,20 +36,20 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Stable Sword Outward Slash
+      name: TakeDamage
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 61
+      lastFrame: 31
       wrapMode: 0
-      orientationOffsetY: -50
+      orientationOffsetY: 0
       level: 0
-      cycleOffset: 50
+      cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0
@@ -59,14 +59,7 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events:
-      - time: 0.3334475
-        functionName: HitWithSword
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
