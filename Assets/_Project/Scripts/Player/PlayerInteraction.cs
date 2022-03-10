@@ -20,10 +20,15 @@ public class PlayerInteraction : MonoBehaviour
     private float _speed;
 
     private ResourceProvider _currentResourceProvider;
+    private Enemy _currentEnemy;
+
+    private PlayerHeldItemController _heldController;
 
     private void Awake()
     {
         TryGetComponent(out _animator);
+        TryGetComponent(out _heldController);
+
         _interactibles = FindObjectsOfType<Interactible>();
         foreach (var interactible in _interactibles)
         {
@@ -50,6 +55,31 @@ public class PlayerInteraction : MonoBehaviour
         else if (interactible.GetType().BaseType == typeof(Enemy))
         {
             Debug.Log("Hello Enemy");
+            HandleEnemy(interactible.GetComponent<Enemy>());
+        }
+    }
+
+
+    private void HandleEnemy(Enemy enemy)
+    {
+        _inRange = true;
+        _currentEnemy = enemy;
+
+        StartCoroutine(InEnemyRangeRoutine());
+
+    }
+
+    private IEnumerator InEnemyRangeRoutine()
+    {
+        while (_inRange)
+        {
+            if (_speed < 0.01f)
+            {
+                transform.LookAt(_currentEnemy.transform);
+                _animator.SetBool("Attack", true);
+                _heldController.EquipSword();
+            }
+            yield return null;
         }
     }
 
@@ -70,6 +100,7 @@ public class PlayerInteraction : MonoBehaviour
             {
                 transform.LookAt(_currentResourceProvider.transform);
                 _animator.SetBool("Cut", true);
+                _heldController.EquipAxe();
             }
             yield return null;
         }
@@ -77,15 +108,22 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractionStop(Interactible interactible)
     {
-        if (interactible.GetType() == typeof(Tree))
+        if (interactible.GetType().BaseType == typeof(ResourceProvider))
         {
             _inRange = false;
             _animator.SetBool("Cut", false);
-
+        }
+        else if (interactible.GetType().BaseType == typeof(Enemy))
+        {
+            _inRange = false;
+            _animator.SetBool("Attack", false);
         }
         else if (interactible.GetType() == typeof(CollectibleItem))
         {
         }
+
+        _heldController.HideAll();
+
         OnFinishInteraction?.Invoke();
     }
 

@@ -60,7 +60,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.42170435
+      - time: 0.6039266
         functionName: HitTree
         data: 
         objectReferenceParameter: {instanceID: 0}
