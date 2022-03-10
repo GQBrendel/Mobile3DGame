@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public struct SpawnablesCount
+{
+    public int Min;
+    public int Max;
+}
+
 public abstract class Interactible : MonoBehaviour, IPlayerInteractible<Interactible>
 {
     public delegate void InteractionHandler(Interactible a);
@@ -10,9 +17,10 @@ public abstract class Interactible : MonoBehaviour, IPlayerInteractible<Interact
 
     private InteractionTrigger _myTrigger;
 
-    protected void Awake()
+
+    protected virtual void Awake()
     {
-        _myTrigger = GetComponentInChildren<InteractionTrigger>();
+        _myTrigger = GetComponentInChildren<InteractionTrigger>(true);
         _myTrigger.OnEnter.AddListener(() => StartInteraction());
         _myTrigger.OnExit.AddListener(() => StopInteraction());
     }

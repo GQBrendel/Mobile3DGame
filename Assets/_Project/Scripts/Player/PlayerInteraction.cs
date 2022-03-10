@@ -2,19 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerInteraction : MonoBehaviour
 {
-    public Interactible[] _interactibles;
+    public UnityEvent OnFinishInteraction;
+
 
     [SerializeField] private int _playerDamage = 1;
+    [SerializeField] private Transform _playerHead;
+
+    private Interactible[] _interactibles;
 
     private Animator _animator;
 
     private bool _inRange;
     private float _speed;
 
-    private Tree _currentTree;
+    private ResourceProvider _currentResourceProvider;
 
     private void Awake()
     {
@@ -27,22 +32,31 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
+    public Transform GetPlayerHead()
+    {
+        return _playerHead;
+    }
+
     private void HandleInteractionStart(Interactible interactible)
     {
         if (interactible.GetType() == typeof(Tree))
         {
-            HandleTree(interactible.GetComponent<Tree>());
+            HandleTree(interactible.GetComponent<ResourceProvider>());
         }
         else if (interactible.GetType() == typeof(CollectibleItem))
         {
             Debug.Log("Hello CollectibleItem");
         }
+        else if (interactible.GetType().BaseType == typeof(Enemy))
+        {
+            Debug.Log("Hello Enemy");
+        }
     }
 
-    private void HandleTree(Tree tree)
+    private void HandleTree(ResourceProvider tree)
     {
         _inRange = true;
-        _currentTree = tree;
+        _currentResourceProvider = tree;
 
         StartCoroutine(InTreeRangeRoutine());
     }
@@ -54,7 +68,7 @@ public class PlayerInteraction : MonoBehaviour
             Debug.Log(_speed);
             if (_speed < 0.01f)
             {
-                transform.LookAt(_currentTree.transform);
+                transform.LookAt(_currentResourceProvider.transform);
                 _animator.SetBool("Cut", true);
             }
             yield return null;
@@ -72,15 +86,7 @@ public class PlayerInteraction : MonoBehaviour
         else if (interactible.GetType() == typeof(CollectibleItem))
         {
         }
-        ResetTriggers();
-    }
-
-    private void ResetTriggers()
-    {
-        foreach (var interactible in _interactibles)
-        {
-            interactible.ResetTrigger();
-        }
+        OnFinishInteraction?.Invoke();
     }
 
     private void OnDestroy()
@@ -100,6 +106,6 @@ public class PlayerInteraction : MonoBehaviour
     //Called by AnimationEvent
     public void HitTree()
     {
-        _currentTree.Hit(_playerDamage);
+        _currentResourceProvider.Hit(_playerDamage);
     }
 }
