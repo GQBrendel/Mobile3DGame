@@ -8,9 +8,11 @@ public class PlayerInteraction : MonoBehaviour
 {
     public UnityEvent OnFinishInteraction;
 
-
     [SerializeField] private int _playerDamage = 1;
     [SerializeField] private Transform _playerHead;
+
+    [SerializeField] private float _attackCooldown = 2f;
+    [SerializeField] private float _cooldownCount = 0;
 
     private Interactible[] _interactibles;
 
@@ -24,6 +26,14 @@ public class PlayerInteraction : MonoBehaviour
     private Enemy _currentEnemy;
 
     private PlayerHeldItemController _heldController;
+
+    private void Update()
+    {
+        if(_cooldownCount > 0)
+        {
+            _cooldownCount -= Time.deltaTime;
+        }
+    }
 
     internal void ApplyHit(float damage)
     {
@@ -79,16 +89,19 @@ public class PlayerInteraction : MonoBehaviour
     {
         while (_inRange)
         {
-            if (_speed < 0.01f)
+
+            if(/*_cooldownCount <= 0 &&*/ _speed < 0.01f)
             {
+                _animator.SetFloat("Cooldown", _cooldownCount);
+                _animator.SetBool("Attack", true);
                 transform.LookAt(_currentEnemy.transform);
                 _heldController.EquipSword();
-
-                _animator.SetBool("Attack", true);
             }
+
             else// if (_speed > 0.2f)
             {
-                HandleInteractionStop(_currentEnemy);
+                _animator.SetBool("Attack", false);
+                //HandleInteractionStop(_currentEnemy);
             }
             yield return null;
         }
@@ -127,7 +140,7 @@ public class PlayerInteraction : MonoBehaviour
         else if (interactible.GetType().BaseType == typeof(Enemy))
         {
             _inRange = false;
-            _animator.SetBool("Attack", false);
+            Debug.Log("Goodbye enemy");
         }
         else if (interactible.GetType() == typeof(CollectibleItem))
         {
@@ -161,6 +174,7 @@ public class PlayerInteraction : MonoBehaviour
     //Called by AnimationEvent
     public void HitWithSword()
     {
+        _cooldownCount = _attackCooldown;
         _currentEnemy.Hit(_playerDamage);
     }
 }

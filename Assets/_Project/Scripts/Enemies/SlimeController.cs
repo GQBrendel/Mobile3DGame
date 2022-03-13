@@ -9,14 +9,15 @@ public class SlimeController : Enemy
     [SerializeField] private float _lookRadius;
     [SerializeField] private float _rotationSlerp = 5f;
     [SerializeField] private float _attackInitialDelay = 2f;
-    [SerializeField] private float _betweenAttacksDelay = 1f;
+    [SerializeField] private float _attackCooldown = 3f;
+    [SerializeField] private float _cooldownCount = 0f;
 
     [SerializeField] private EnemyAIState _state;
 
     private Transform _target;
     private NavMeshAgent _agent;
 
-    private bool _attacking = false;
+    //private bool _attacking = false;
 
     private float _distance;
 
@@ -52,19 +53,24 @@ public class SlimeController : Enemy
 
             case EnemyAIState.AttackingState:
 
-                if (!_attacking)
+               // if (!_attacking)
                 {
                     StartCoroutine(AttackRoutine());
                 }
                 FaceTarget();
 
-                if (_distance > _agent.stoppingDistance)
+                if (_distance > _agent.stoppingDistance + 1)
                 {
                     StopAttack();
                     _state = EnemyAIState.ChasingState;
                 }
                 break;
-        }     
+        }
+
+        if (_cooldownCount > 0)
+        {
+            _cooldownCount -= Time.deltaTime;
+        }
     }
 
     private IEnumerator ChangeToAttackStateRoutine()
@@ -81,11 +87,13 @@ public class SlimeController : Enemy
 
     private IEnumerator AttackRoutine()
     {
-        _attacking = true;
-        Animator.SetTrigger("Attack");
-        yield return new WaitForSeconds(_betweenAttacksDelay);
+       // _attacking = true;
 
-        _attacking = false;
+        Animator.SetBool("Attack", true);
+        Animator.SetFloat("Cooldown", _cooldownCount);
+
+        yield return null;
+
     }
 
     private void StopAttack()
@@ -111,6 +119,7 @@ public class SlimeController : Enemy
     //Animation Event
     private void AttackHit()
     {
+        _cooldownCount = _attackCooldown;
         PlayerManager.Instance.ApplyPlayerHit(EnemyStats.Damage);
     }
 }

@@ -307,6 +307,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 3
   _maxHp: 300
+  _damage: 1
 --- !u!114 &3075125130544593393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,6 +323,9 @@ MonoBehaviour:
   _pushBlock: {fileID: 1352205952910081462}
   _lookRadius: 4
   _rotationSlerp: 5
+  _attackInitialDelay: 2
+  _attackCooldown: 3
+  _cooldownCount: 0
   _state: 0
 --- !u!1 &8413214110009707136
 GameObject:
