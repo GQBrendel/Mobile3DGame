@@ -33,11 +33,16 @@ public class SlimeController : Enemy
     {
         _distance = Vector3.Distance(transform.position, _target.position);
 
+        if (!IsAlive)
+        {
+            _state = EnemyAIState.DeadState;
+        }
+
         switch (_state)
         {
             case EnemyAIState.IdleState:
 
-                if(_distance <= _lookRadius)
+                if (_distance <= _lookRadius)
                 {
                     _state = EnemyAIState.ChasingState;
                 }
@@ -53,7 +58,7 @@ public class SlimeController : Enemy
 
             case EnemyAIState.AttackingState:
 
-               // if (!_attacking)
+                // if (!_attacking)
                 {
                     StartCoroutine(AttackRoutine());
                 }
@@ -64,6 +69,8 @@ public class SlimeController : Enemy
                     StopAttack();
                     _state = EnemyAIState.ChasingState;
                 }
+                break;
+            case EnemyAIState.DeadState:
                 break;
         }
 

@@ -17,8 +17,9 @@ public class CollectibleItem : Interactible
 
     private void ItemFinishedInteraction()
     {
-        _itemRender.SetActive(false);
+        //_itemRender.SetActive(false);
         OnItemCollected?.Invoke();
+        Destroy(gameObject);
     }
 
     public override void StartInteraction()

@@ -18,6 +18,7 @@ public class InteractionManager : MonoBehaviour
 
     private void ResetTriggers()
     {
+        _interactibles = FindObjectsOfType<Interactible>();
         foreach (var interactible in _interactibles)
         {
             interactible.ResetTrigger();

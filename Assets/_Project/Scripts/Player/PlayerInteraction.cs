@@ -60,9 +60,9 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractionStart(Interactible interactible)
     {
-        if (interactible.GetType() == typeof(Tree))
+        if (interactible.GetType().BaseType == typeof(ResourceProvider))
         {
-            HandleTree(interactible.GetComponent<ResourceProvider>());
+            HandleResourceProvider(interactible.GetComponent<ResourceProvider>());
         }
         else if (interactible.GetType() == typeof(CollectibleItem))
         {
@@ -70,7 +70,6 @@ public class PlayerInteraction : MonoBehaviour
         }
         else if (interactible.GetType().BaseType == typeof(Enemy))
         {
-            Debug.Log("Hello Enemy");
             HandleEnemy(interactible.GetComponent<Enemy>());
         }
     }
@@ -89,6 +88,13 @@ public class PlayerInteraction : MonoBehaviour
     {
         while (_inRange)
         {
+            _currentEnemy = FindClosestEnemy();
+
+            if(_currentEnemy == null)
+            {
+                _inRange = false;
+                yield break;
+            }
 
             if(/*_cooldownCount <= 0 &&*/ _speed < 0.01f)
             {
@@ -107,24 +113,70 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void HandleTree(ResourceProvider tree)
+    public Enemy FindClosestEnemy()
+    {
+        Enemy[] enemies;
+        enemies = FindObjectsOfType<Enemy>();
+
+        Enemy closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (Enemy enemy in enemies)
+        {
+            if (!enemy.IsAlive)
+            {
+                continue;
+            }
+            Vector3 diff = enemy.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = enemy;
+                distance = curDistance;
+            }
+        }
+     
+        return closest;
+    }
+
+    private void HandleResourceProvider(ResourceProvider provider)
     {
         _inRange = true;
-        _currentResourceProvider = tree;
+        _currentResourceProvider = provider;
 
-        StartCoroutine(InTreeRangeRoutine());
+        if (_currentResourceProvider.GetType() == typeof(Tree))
+        {
+            StartCoroutine(InTreeRangeRoutine());
+        }
+        else if (_currentResourceProvider.GetType() == typeof(RockSource))
+        {
+            StartCoroutine(InRockSourceRangeRoutine());
+        }
     }
 
     private IEnumerator InTreeRangeRoutine()
     {
         while (_inRange)
         {
-            Debug.Log(_speed);
             if (_speed < 0.01f)
             {
                 transform.LookAt(_currentResourceProvider.transform);
                 _animator.SetBool("Cut", true);
                 _heldController.EquipAxe();
+            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator InRockSourceRangeRoutine()
+    {
+        while (_inRange)
+        {
+            if (_speed < 0.01f)
+            {
+                transform.LookAt(_currentResourceProvider.transform);
+                _animator.SetBool("Cut", true);
+                _heldController.EquipPickAxe();
             }
             yield return null;
         }
@@ -140,7 +192,6 @@ public class PlayerInteraction : MonoBehaviour
         else if (interactible.GetType().BaseType == typeof(Enemy))
         {
             _inRange = false;
-            Debug.Log("Goodbye enemy");
         }
         else if (interactible.GetType() == typeof(CollectibleItem))
         {
@@ -174,7 +225,21 @@ public class PlayerInteraction : MonoBehaviour
     //Called by AnimationEvent
     public void HitWithSword()
     {
+        if (!_currentEnemy)
+        {
+            return;
+        }
         _cooldownCount = _attackCooldown;
         _currentEnemy.Hit(_playerDamage);
+    }
+
+    //Called by AnimationEvent
+    public void FinishAttackAction()
+    {
+        if (!_currentEnemy)
+        {
+            _animator.SetBool("Attack", false);
+            return;
+        }
     }
 }

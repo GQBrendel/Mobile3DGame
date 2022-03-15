@@ -6,6 +6,7 @@ public class PlayerHeldItemController : MonoBehaviour
 {
     [SerializeField] private HeldItem _axe;
     [SerializeField] private HeldItem _sword;
+    [SerializeField] private HeldItem _pickAxe;
 
     private HeldItem[] _heldItens;
 
@@ -19,6 +20,12 @@ public class PlayerHeldItemController : MonoBehaviour
     {
         HideAll();
         _axe.gameObject.SetActive(true);
+    }
+
+    public void EquipPickAxe()
+    {
+        HideAll();
+        _pickAxe.gameObject.SetActive(true);
     }
 
     public void EquipSword()

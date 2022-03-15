@@ -2,11 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Enemy))]
 public class EnemyStats : MonoBehaviour
 {
+    public UnityEvent OnLostAllHealth;
+
     [SerializeField] private float _moveSpeed;
     [SerializeField] private int _maxHp = 300;
     [SerializeField] private int _damage = 1;
@@ -43,12 +47,13 @@ public class EnemyStats : MonoBehaviour
 
     private void Kill()
     {
+        OnLostAllHealth?.Invoke();
+        /*
         StartCoroutine(WaitAndDestroy());
 
         IEnumerator WaitAndDestroy()
         {
             yield return new WaitForSeconds(.1f);
-            gameObject.SetActive(false);
-        }
+        }*/
     }
 }

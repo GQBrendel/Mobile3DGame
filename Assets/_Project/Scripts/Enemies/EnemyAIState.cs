@@ -6,5 +6,6 @@ public enum EnemyAIState
 {
     IdleState,
     ChasingState,
-    AttackingState
+    AttackingState,
+    DeadState
 }
